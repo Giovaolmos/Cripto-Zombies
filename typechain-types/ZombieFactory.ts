@@ -9,6 +9,7 @@ import type {
   Result,
   Interface,
   EventFragment,
+  AddressLike,
   ContractRunner,
   ContractMethod,
   Listener,
@@ -24,7 +25,11 @@ import type {
 
 export interface ZombieFactoryInterface extends Interface {
   getFunction(
-    nameOrSignature: "createRandomZombie" | "zombies"
+    nameOrSignature:
+      | "createRandomZombie"
+      | "ownerZombieCount"
+      | "zombieToOwner"
+      | "zombies"
   ): FunctionFragment;
 
   getEvent(nameOrSignatureOrTopic: "NewZombie"): EventFragment;
@@ -34,12 +39,28 @@ export interface ZombieFactoryInterface extends Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "ownerZombieCount",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "zombieToOwner",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "zombies",
     values: [BigNumberish]
   ): string;
 
   decodeFunctionResult(
     functionFragment: "createRandomZombie",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "ownerZombieCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "zombieToOwner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "zombies", data: BytesLike): Result;
@@ -112,6 +133,10 @@ export interface ZombieFactory extends BaseContract {
     "nonpayable"
   >;
 
+  ownerZombieCount: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
+
+  zombieToOwner: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+
   zombies: TypedContractMethod<
     [arg0: BigNumberish],
     [[string, bigint] & { name: string; dna: bigint }],
@@ -125,6 +150,12 @@ export interface ZombieFactory extends BaseContract {
   getFunction(
     nameOrSignature: "createRandomZombie"
   ): TypedContractMethod<[_name: string], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "ownerZombieCount"
+  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "zombieToOwner"
+  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
   getFunction(
     nameOrSignature: "zombies"
   ): TypedContractMethod<

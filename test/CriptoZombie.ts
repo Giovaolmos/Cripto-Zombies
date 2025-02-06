@@ -12,6 +12,7 @@ describe("ZombieFactory", function () {
 
   describe("Creación de Zombies", function () {
     it("Debería crear un nuevo zombie con nombre y DNA", async function () {
+      const [owner] = await ethers.getSigners();
       const tx = await zombieFactory.createRandomZombie("Zombie1");
       const receipt = await tx.wait(1);
       if (!receipt) throw new Error("No se recibió el receipt");
@@ -22,6 +23,11 @@ describe("ZombieFactory", function () {
       expect(parsedLog?.args?.name).to.equal("Zombie1");
       expect(parsedLog?.args?.zombieId).to.equal(0);
       expect(parsedLog?.args?.dna).to.not.equal(0);
+
+      // Verificamos el mapping zombieToOwner
+      expect(await zombieFactory.zombieToOwner(0)).to.equal(owner.address);
+      // Verificamos el contador de zombies del owner
+      expect(await zombieFactory.ownerZombieCount(owner.address)).to.equal(1);
     });
 
     it("Debería generar DNA de 16 dígitos", async function () {
