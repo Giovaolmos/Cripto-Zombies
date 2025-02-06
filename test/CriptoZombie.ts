@@ -62,5 +62,15 @@ describe("ZombieFactory", function () {
       expect(zombie.name).to.equal("Zombie1");
       expect(zombie.dna.toString()).to.match(/^\d{16}$/);
     });
+
+    it("No debería permitir crear más de un zombie por dirección", async function () {
+      // Primero creamos un zombie
+      await zombieFactory.createRandomZombie("Zombie1");
+
+      // Intentamos crear un segundo zombie
+      await expect(
+        zombieFactory.createRandomZombie("Zombie2"),
+      ).to.be.revertedWith("Ya tienes un zombie");
+    });
   });
 });
